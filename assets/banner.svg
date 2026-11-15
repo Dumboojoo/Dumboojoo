@@ -4,11 +4,8 @@
 text { font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; }
 @keyframes puls { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
 .puls { animation: puls 4s ease-in-out infinite; }
-.puls2 { animation: puls 4s ease-in-out 2s infinite; }
 @keyframes zeichnen { from { stroke-dashoffset: 1.05; } to { stroke-dashoffset: 0; } }
 .zieh { stroke-dasharray: 1 1.1; animation: zeichnen 1s cubic-bezier(.6, 0, .3, 1) both; }
-@keyframes auf { from { opacity: 0; transform: translateY(10px) scale(.8); } to { opacity: 1; transform: none; } }
-.auf { animation: auf .7s cubic-bezier(.2, .8, .3, 1.25) both; transform-box: fill-box; transform-origin: center; }
 @keyframes wiegen { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(5px) rotate(2deg); } }
 .wiegen { animation: wiegen 3.4s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 20%; }
 @keyframes schweben { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
@@ -31,9 +28,7 @@ text { font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif; 
 @keyframes einblenden { from { opacity: 0; } to { opacity: 1; } }
 .ein { animation: einblenden 1.2s ease-out both; }
 </style>
-<defs><radialGradient id="glowJade"><stop offset="0" stop-color="#7fdcb3" stop-opacity=".7"/><stop offset="1" stop-color="#7fdcb3" stop-opacity="0"/></radialGradient>
-<radialGradient id="glowAmber"><stop offset="0" stop-color="#ffcf6a" stop-opacity=".85"/><stop offset="1" stop-color="#ffcf6a" stop-opacity="0"/></radialGradient>
-<radialGradient id="vig" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#2c2735"/><stop offset="1" stop-color="#16141b"/></radialGradient><filter id="weich" filterUnits="userSpaceOnUse" x="0" y="0" width="960" height="330"><feGaussianBlur stdDeviation="3.2"/></filter><linearGradient id="himmel" x1="0" y1="0" x2="0" y2="1">
+<defs><radialGradient id="glowJade"><stop offset="0" stop-color="#7fdcb3" stop-opacity=".7"/><stop offset="1" stop-color="#7fdcb3" stop-opacity="0"/></radialGradient><filter id="weich" filterUnits="userSpaceOnUse" x="0" y="0" width="960" height="330"><feGaussianBlur stdDeviation="3.2"/></filter><linearGradient id="himmel" x1="0" y1="0" x2="0" y2="1">
 <stop offset="0" stop-color="#110f20"/><stop offset=".3" stop-color="#231c3d"/><stop offset=".5" stop-color="#3d2e57"/>
 <stop offset=".63" stop-color="#6b4563"/><stop offset=".73" stop-color="#ad626a"/><stop offset=".8" stop-color="#df8e62"/><stop offset=".87" stop-color="#f3b86f"/></linearGradient>
 <radialGradient id="sonne"><stop offset="0" stop-color="#ffd9a0" stop-opacity=".9"/><stop offset=".35" stop-color="#ffb46a" stop-opacity=".35"/><stop offset="1" stop-color="#ff9a5a" stop-opacity="0"/></radialGradient>

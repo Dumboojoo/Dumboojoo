@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-"""Zeichnet alle Bilder des GitHub-Profils nach assets/.
+"""Zeichnet das Banner des GitHub-Profils nach assets/banner.svg.
 
 Stil wie Breath of Freedom (STIL.md im Spiel-Repo): flache Facetten, links hell und rechts dunkel,
-nur Wichtiges leuchtet in Jade. Medaillen, Gleiter, Drache und Ei sind aus dem Wiki des Spiels
-übernommen (wiki/symbole.js, wiki/gegner.js), damit Profil und Spiel gleich aussehen.
+nur Wichtiges leuchtet in Jade. Gleiter, Waystone und Watchtower sind aus dem Wiki des Spiels
+übernommen (wiki/symbole.js, wiki/karte.js), damit Profil und Spiel gleich aussehen.
 
-Alle Bilder sind SVG mit eingebauter Bewegung (CSS), ohne Skripte, fremde Schriften oder Dateien:
+Das Banner ist ein SVG mit eingebauter Bewegung (CSS), ohne Skripte, fremde Schriften oder Dateien:
 GitHub zeigt Bilder abgeschottet an, dort geht nur, was in der Datei selbst steht.
 Wer im System "Bewegung reduzieren" eingestellt hat, sieht alles still.
 
 Aufruf (Mac): python3 tools/zeichne_profil.py   (Windows: py tools\\zeichne_profil.py)
 """
-import math
 import random
 from pathlib import Path
 
@@ -20,13 +19,8 @@ ZIEL = Path(__file__).resolve().parent.parent / "assets"
 # ---------- Farben aus STIL.md ----------
 JADE = "#7fdcb3"
 JADE_HELL = "#d6fff0"
-GOLD = "#e0b450"
 TEXT = "#ece6d6"
-GEDAEMPFT = "#a8a191"
 GRUND = "#16141b"
-RAND = "#2c2933"
-KACHEL = "#1f1c25"
-SELTEN = {"u": "#6fae5b", "s": "#5b8fd6", "ss": "#a774e0", "l": "#e0b450"}
 SANS = "'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif"
 
 
@@ -46,15 +40,6 @@ def L(d, c, w=2, extra=""):
 
 def C(x, y, r, c, extra=""):
     return f'<circle cx="{z(x)}" cy="{z(y)}" r="{z(r)}" fill="{c}" {extra}/>'
-
-
-def gem(cx, cy, r, hell, dunkel, glanz=None):
-    k, h = r * 0.866, r / 2
-    s = P(f"{z(cx)},{z(cy - r)} {z(cx - k)},{z(cy - h)} {z(cx - k)},{z(cy + h)} {z(cx)},{z(cy + r)}", hell)
-    s += P(f"{z(cx)},{z(cy - r)} {z(cx + k)},{z(cy - h)} {z(cx + k)},{z(cy + h)} {z(cx)},{z(cy + r)}", dunkel)
-    if glanz:
-        s += P(f"{z(cx - k * .7)},{z(cy - h * .9)} {z(cx - k * .15)},{z(cy - r * .8)} {z(cx - k * .35)},{z(cy - h * .1)}", glanz)
-    return s
 
 
 def funkel(x, y, s, c, extra=""):
@@ -130,19 +115,14 @@ def builder(text, x, y, e, anker="mitte", start=0.0, takt=0.08, dicke=0.42):
 
 
 # ---------- Gemeinsame Teile aller Bilder ----------
-VERLAEUFE = """<radialGradient id="glowJade"><stop offset="0" stop-color="#7fdcb3" stop-opacity=".7"/><stop offset="1" stop-color="#7fdcb3" stop-opacity="0"/></radialGradient>
-<radialGradient id="glowAmber"><stop offset="0" stop-color="#ffcf6a" stop-opacity=".85"/><stop offset="1" stop-color="#ffcf6a" stop-opacity="0"/></radialGradient>
-<radialGradient id="vig" cx="50%" cy="45%" r="60%"><stop offset="0" stop-color="#2c2735"/><stop offset="1" stop-color="#16141b"/></radialGradient>"""
+VERLAEUFE = """<radialGradient id="glowJade"><stop offset="0" stop-color="#7fdcb3" stop-opacity=".7"/><stop offset="1" stop-color="#7fdcb3" stop-opacity="0"/></radialGradient>"""
 
 GRUND_CSS = f"""
 text {{ font-family: {SANS}; }}
 @keyframes puls {{ 0%, 100% {{ opacity: .45; }} 50% {{ opacity: 1; }} }}
 .puls {{ animation: puls 4s ease-in-out infinite; }}
-.puls2 {{ animation: puls 4s ease-in-out 2s infinite; }}
 @keyframes zeichnen {{ from {{ stroke-dashoffset: 1.05; }} to {{ stroke-dashoffset: 0; }} }}
 .zieh {{ stroke-dasharray: 1 1.1; animation: zeichnen 1s cubic-bezier(.6, 0, .3, 1) both; }}
-@keyframes auf {{ from {{ opacity: 0; transform: translateY(10px) scale(.8); }} to {{ opacity: 1; transform: none; }} }}
-.auf {{ animation: auf .7s cubic-bezier(.2, .8, .3, 1.25) both; transform-box: fill-box; transform-origin: center; }}
 @keyframes wiegen {{ 0%, 100% {{ transform: translateY(0) rotate(-2deg); }} 50% {{ transform: translateY(5px) rotate(2deg); }} }}
 .wiegen {{ animation: wiegen 3.4s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 20%; }}
 @keyframes schweben {{ 0%, 100% {{ transform: translateY(0); }} 50% {{ transform: translateY(-4px); }} }}
@@ -163,15 +143,6 @@ def svg(w, h, titel, inhalt, css="", defs=""):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}" role="img" aria-label="{titel}">\n'
             f'<title>{titel}</title>\n<style>{GRUND_CSS}{css}</style>\n'
             f'<defs>{VERLAEUFE}{weich}{defs}</defs>\n{inhalt}\n</svg>\n')
-
-
-def panel(w, h, rx=12):
-    """Dunkles Fenster wie im Spiel, mit Jade-Ecken der Builders (STIL.md 6)."""
-    i, k = 10, 22
-    ecken = (f"M{i} {i + k}V{i}H{i + k} M{w - i - k} {i}H{w - i}V{i + k} "
-             f"M{w - i} {h - i - k}V{h - i}H{w - i - k} M{i + k} {h - i}H{i}V{h - i - k}")
-    return (f'<rect x=".5" y=".5" width="{w - 1}" height="{h - 1}" rx="{rx}" fill="{GRUND}" stroke="{RAND}"/>'
-            f'<path d="{ecken}" fill="none" stroke="{JADE}" stroke-width="1.6" stroke-linecap="square" opacity=".55"/>')
 
 
 def text(x, y, inhalt, groesse=14, farbe=TEXT, anker="start", gewicht=400, abstand=0, extra=""):
@@ -250,7 +221,7 @@ def waystone(gross=1.0):
     return f'<g transform="scale({gross})">{s}</g>'
 
 
-# ---------- Figuren und Symbole aus dem Wiki ----------
+# ---------- Gleiter aus dem Wiki ----------
 def gleiter():
     """Gleiter von vorne (SYMBOLE.glider), viewBox 100 x 100."""
     return (P("12,40 30,22 50,18 50,40", "#c9a46a") + P("50,18 70,22 88,40 50,40", "#a8834e") + P("12,40 88,40 84,46 16,46", "#8a5a2c")
@@ -277,113 +248,6 @@ def gleiter_mit_figur():
     return s
 
 
-MEDAILLE = {
-    "stone": ("#b7ae98", "#7d7564", "#d9d2c0"),
-    "bronze": ("#d09a5e", "#8f5f32", "#e8b880"),
-    "silver": ("#e3e6ea", "#9aa1a9", "#eef1f4"),
-    "gold": ("#f0cf6e", "#b48a2c", "#ffe08a"),
-    "jade": ("#e2d8bd", "#a99f86", "#7fdcb3"),
-}
-
-
-def mische(a, b, t):
-    pa = [int(a[i:i + 2], 16) for i in (1, 3, 5)]
-    pb = [int(b[i:i + 2], 16) for i in (1, 3, 5)]
-    return "#" + "".join(f"{round(x + (y - x) * t):02x}" for x, y in zip(pa, pb))
-
-
-def erfolg_zeichen(kat, c):
-    """Zeichen je Erfolgs-Kategorie (erfolgZeichen im Wiki), um die Mitte (50, 50)."""
-    dunkel = "#1f1c25"
-    if kat == "explore":
-        return (f'<ellipse cx="50" cy="58" rx="13" ry="4.5" fill="none" stroke="{c}" stroke-width="2.4"/>'
-                + P("46,58 46,39 50,34 54,39 54,58", c) + L("M50 40 V54", dunkel, 1.2))
-    if kat == "growth":
-        return L("M39 64 L50 56 L61 64 M39 55 L50 47 L61 55", c, 3.4) + funkel(50, 38, 6, c)
-    if kat == "collect":
-        return (P("35,41 50,45 50,63 35,59", c) + P("50,45 65,41 65,59 50,63", c, 'opacity=".75"')
-                + L("M39 47 L47 49 M39 52 L47 54 M53 49 L61 47 M53 54 L61 52", dunkel, 1.1))
-    if kat == "boss":
-        return (P("42,46 58,46 57,59 50,65 43,59", c) + P("42,49 34,34 46,45", c) + P("58,49 66,34 54,45", c)
-                + P("44,51 48.5,52 48,55 44.5,54", dunkel) + P("56,51 51.5,52 52,55 55.5,54", dunkel))
-    if kat == "secret":
-        return f'<text x="50" y="62" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="30" fill="{c}">?</text>'
-    return ""
-
-
-def medaille(stufe, kat):
-    """Medaille wie medaille() im Wiki: Ring aus 8 Builder-Steinen, viewBox 100 x 100."""
-    hell, dunkel, zeichen = MEDAILLE[stufe]
-
-    def pt(a, r):
-        return f"{z(50 + r * math.cos(math.radians(a)))},{z(50 + r * math.sin(math.radians(a)))}"
-
-    s = ""
-    if stufe == "jade":
-        s += C(50, 50, 46, "url(#glowJade)", 'class="puls"')
-    elif stufe == "gold":
-        s += C(50, 50, 44, "url(#glowAmber)", 'class="puls" opacity=".5"')
-    s += C(51.5, 51.5, 41, "#0d0b10", 'opacity=".55"')
-    for k in range(8):
-        a0 = k * 45 - 112.5 + 2.2
-        a1 = a0 + 45 - 4.4
-        mitte = (a0 + a1) / 2
-        t = (1 - math.cos(math.radians(mitte + 135))) / 2
-        s += P(f"{pt(a0, 41)} {pt(a1, 41)} {pt(a1, 27)} {pt(a0, 27)}", mische(hell, dunkel, t))
-        s += P(f"{pt(a0, 41)} {pt(a1, 41)} {pt(a1, 37.5)} {pt(a0, 37.5)}", "rgba(255,255,255,.18)")
-        if stufe == "jade":
-            s += f'<path d="M{pt(mitte - 9, 34)} L{pt(mitte + 9, 34)}" stroke="{JADE}" stroke-width="1.6" stroke-linecap="round"/>'
-    s += C(50, 50, 25, "#1f1c25") + C(50, 50, 23, "none", f'stroke="{dunkel}" stroke-width="1.2" opacity=".8"')
-    return s + erfolg_zeichen(kat, zeichen)
-
-
-def ei(hell, dunkel, glanz, muster=""):
-    return (P("50,14 42,17 35,26 30,40 28,56 31,71 39,83 50,88", hell)
-            + P("50,14 58,17 65,26 70,40 72,56 69,71 61,83 50,88", dunkel) + P("37,30 44,20 43,34", glanz) + muster)
-
-
-def ur_ei():
-    """Ancient Egg (Update 3): dunkel, goldene Adern, pulsiert."""
-    return (C(50, 52, 34, "url(#glowAmber)", 'class="puls"')
-            + ei("#4d4458", "#352e3e", "#71667e", L("M40 26 Q44 44 38 60 Q44 72 46 84 M60 24 Q56 40 62 54 Q58 70 56 84 M44 46 L56 50", GOLD, 1.4))
-            + C(50, 52, 3, "#ffcf6a", 'class="puls2"'))
-
-
-def schwert():
-    """Einfaches Schwert der Builders (schwert() im Wiki), schräg, viewBox 100 x 100."""
-    k = P("45,62 45,20 50,12 50,62", "#e9e3d3") + P("50,62 50,12 55,20 55,62", "#b9b2a2")
-    k += L("M50 20 L50 60", JADE, 1.4, 'class="puls"')
-    k += P("37,62 63,62 63,66 37,66", "#6f6a66") + P("50,62 63,62 63,66 50,66", "rgba(0,0,0,.2)")
-    k += P("47,66 53,66 53,82 47,82", "#7a5532") + L("M47 71 L53 73 M47 77 L53 79", "rgba(0,0,0,.35)", 1.2)
-    k += gem(50, 86, 4.5, "#6f6a66", "rgba(0,0,0,.35)")
-    return f'<g transform="rotate(45 50 50) translate(0 2)">{k}</g>'
-
-
-def drache():
-    """Wyvern (drache() im Wiki), von der Seite, Füße bei y = 0, Kopf nach rechts."""
-    h, d, bauch, haut, auge = "#4f7a3c", "#3a5c2c", "#d9b052", "#7aa85a", "#ffe08a"
-    g = P("44,-112 60,-2 18,-62", "#56803f", 'opacity=".85"') + L("M30 -74 L44 -112 L60 -2", d, 6)
-    g += L("M-24 -56 L-10 -30 L-26 -10 L-10 0", d, 10)
-    g += L("M-36 -62 Q-80 -70 -110 -52 Q-140 -34 -168 -40", h, 14) + L("M-110 -52 Q-140 -34 -168 -40", h, 8) + P("-168,-40 -190,-54 -186,-30", d)
-    g += P("-46,-66 -20,-88 30,-90 44,-70 34,-52 -36,-48", h) + P("-36,-48 34,-52 26,-44 -30,-42", bauch)
-    g += L("M-14 -58 L0 -30 L-16 -10 L2 0", h, 13) + P("-2,0 10,0 6,-6", "#e9e3d3")
-    g += P("40,-118 64,-2 14,-66", haut, 'opacity=".9"') + L("M40 -118 L52 -60 M40 -118 L30 -70", "#3a5c2c", 2)
-    g += L("M32 -78 L40 -118 L64 -2", h, 8) + C(64, -2, 4, "#e9e3d3")
-    g += L("M34 -84 Q60 -110 70 -140 Q76 -160 92 -170", h, 16)
-    for x, y in [(44, -100), (56, -118), (64, -136), (72, -154)]:
-        g += P(f"{x - 4},{y} {x - 10},{y - 10} {x + 2},{y - 4}", d)
-    g += P("86,-178 128,-170 132,-160 100,-156 86,-162", h) + P("100,-156 132,-160 126,-152 102,-150", bauch)
-    g += P("90,-178 70,-192 80,-184 96,-176", "#e9e3d3") + P("96,-178 82,-196 92,-188 102,-176", "#d9cfb2")
-    g += C(106, -169, 3, auge) + C(106, -169, 1.2, "#2a2018")
-    return g
-
-
-def kachel(selten, inhalt):
-    """Item-Kachel wie tile() im Wiki, viewBox 100 x 100."""
-    return (f'<rect x="2" y="2" width="96" height="96" rx="14" fill="url(#vig)" stroke="{SELTEN[selten]}" stroke-width="2.5"/>'
-            f'<ellipse cx="50" cy="90" rx="30" ry="4" fill="#000" opacity=".35"/>{inhalt}')
-
-
 def gluehwuermer(rnd, n, x0, x1, y0, y1):
     s = ""
     for i in range(n):
@@ -394,7 +258,7 @@ def gluehwuermer(rnd, n, x0, x1, y0, y1):
     return s
 
 
-# ---------- 1. Banner ----------
+# ---------- Banner ----------
 def banner():
     W, H = 960, 330
     rnd = random.Random(7)
@@ -471,160 +335,8 @@ def banner():
     return svg(W, H, "Dumboojoo: Roblox developer, building open worlds", "\n".join(s), css, defs)
 
 
-# ---------- 2. Woran ich baue ----------
-MERKMALE = [
-    ("u", "glide", "Glide anywhere", "jump off any peak"),
-    ("s", "sword", "Beat bosses", "giants that hit hard"),
-    ("l", "egg", "Hatch dragons", "find eggs, raise a wyvern"),
-    ("ss", "medal", "Earn medals", "45 achievements, 32 titles"),
-]
-
-
-def spielkarte():
-    W, H = 960, 332
-    defs = """<linearGradient id="tag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5f86ad"/><stop offset=".5" stop-color="#9fc0d8"/><stop offset="1" stop-color="#f1d7a0"/></linearGradient>
-<linearGradient id="unten" x1="0" y1="0" x2="0" y2="1"><stop offset=".6" stop-color="#16141b" stop-opacity="0"/><stop offset="1" stop-color="#16141b" stop-opacity=".55"/></linearGradient>
-<radialGradient id="licht"><stop offset="0" stop-color="#fff4d6" stop-opacity=".8"/><stop offset="1" stop-color="#fff4d6" stop-opacity="0"/></radialGradient>
-<clipPath id="bild"><rect x="22" y="22" width="380" height="288" rx="8"/></clipPath>
-<clipPath id="balken"><rect x="816" y="293" width="120" height="9" rx="4.5"/></clipPath>"""
-    css = """
-@keyframes laden { from { transform: translateX(-40px); } to { transform: translateX(130px); } }
-.laden { animation: laden 2.4s ease-in-out infinite; }
-@keyframes blinken { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
-.live { animation: blinken 1.6s ease-in-out infinite; }
-"""
-    rnd = random.Random(3)
-    s = [panel(W, H)]
-
-    # Bild links: der Green Reach am Nachmittag, Drache auf der Klippe, Ancient Egg auf einem Builder-Stein
-    b = [f'<rect x="22" y="22" width="380" height="288" fill="url(#tag)"/>', C(110, 80, 120, "url(#licht)")]
-    b.append(f'<g class="treiben">{wolke(40, 70, 120, "#ffffff", "#e3ecf2", .7)}{wolke(250, 52, 90, "#ffffff", "#e3ecf2", .55)}</g>')
-    fern = [(60, 150, 70), (140, 118, 80), (230, 142, 70), (320, 110, 90), (410, 146, 70)]
-    b.append(kamm(fern, 215, "#8fa6bd", "#7890a8", 312, 125, ("#eef3f6", "#c9d4dc")))
-    huegel = [(40, 196, 110), (170, 180, 110), (300, 200, 120), (430, 190, 100)]
-    b.append(kamm(huegel, 262, "#9cc46a", "#6e9a48", 312))
-    for x, h in [(140, 26), (158, 32), (176, 24), (64, 22), (80, 28)]:
-        b.append(baum(x, kamm_y(x, huegel, 262) + 5, h, "#5f8a3c", "#4a7030"))
-    b.append(P("22,268 120,262 240,270 402,264 402,312 22,312", "#7fa65a"))
-    b.append(P("22,284 160,280 300,286 402,282 402,312 22,312", "#6e9a48"))
-    # Klippe rechts
-    b.append(P("287,192 262,240 250,312 302,312 308,232", "#a39a88"))
-    b.append(P("287,192 308,232 302,312 402,312 402,186", "#857c6b"))
-    b.append(P("282,193 402,186 402,195 302,201", "#7fa65a"))
-    b.append(L("M318 214 L330 252 L322 290 M360 206 L352 240 L364 276", "#6f675a", 1.6))
-    b.append(f'<g transform="translate(352 192) scale(-.42 .42)">{drache()}</g>')
-    # Ancient Egg auf dem Stein der Builders
-    b.append(P("94,300 120,300 120,284 99,284", "#e2d8bd") + P("120,300 146,300 141,284 120,284", "#b7ae98"))
-    b.append(L("M108 296 H114 V288 H126", JADE, 1.4, 'class="puls"'))
-    b.append(f'<g transform="translate({z(120 - 50 * .62)} {z(285 - 88 * .62)}) scale(.62)">{ur_ei()}</g>')
-    b.append(f'<g transform="translate(160 66)"><g class="wiegen"><g transform="scale(.44)">{gleiter_mit_figur()}</g></g></g>')
-    b.append('<rect x="22" y="22" width="380" height="288" fill="url(#unten)"/>')
-    s.append(f'<g clip-path="url(#bild)">{"".join(b)}</g>')
-    s.append(f'<rect x="22" y="22" width="380" height="288" rx="8" fill="none" stroke="{RAND}"/>')
-
-    # Text rechts
-    x0 = 432
-    s.append(C(x0 + 4, 45.5, 4, JADE, 'class="live"'))
-    s.append(text(x0 + 16, 50, "NOW BUILDING", 13, GEDAEMPFT, "start", 600, 3))
-    s.append(builder("BREATH OF FREEDOM", x0, 64, 4.6, anker="start", start=.2, takt=.05, dicke=.46))
-    s.append(text(x0, 128, "An open-world adventure for Roblox. Climb any cliff,", 15.5, TEXT, "start", 400, 0, 'opacity=".92"'))
-    s.append(text(x0, 150, "glide from any peak, beat bosses and grow stronger.", 15.5, TEXT, "start", 400, 0, 'opacity=".92"'))
-    for i, (selten, art, titel, unter) in enumerate(MERKMALE):
-        tx, ty = x0 + (i % 2) * 256, 170 + (i // 2) * 58
-        inhalt = {"glide": gleiter, "sword": schwert, "egg": ur_ei, "medal": lambda: medaille("gold", "boss")}[art]()
-        s.append(f'<g transform="translate({tx} {ty}) scale(.48)"><g class="auf" style="animation-delay:{.4 + i * .12:.2f}s">{kachel(selten, inhalt)}</g></g>')
-        s.append(text(tx + 60, ty + 21, titel, 15, TEXT, "start", 700))
-        s.append(text(tx + 60, ty + 39, unter, 12.5, GEDAEMPFT))
-    # Stand: Planung fertig, Bauen kommt als Nächstes
-    s.append(text(x0, 302, "PLANNING", 12, GEDAEMPFT, "start", 600, 2))
-    s.append(f'<rect x="516" y="293" width="160" height="9" rx="4.5" fill="{JADE}"/>')
-    s.append(f'<rect x="516" y="293" width="160" height="9" rx="4.5" fill="{JADE}" filter="url(#weich)" class="puls" opacity=".6"/>')
-    s.append(text(684, 302, "done", 12, JADE, "start", 700))
-    s.append(text(732, 302, "BUILDING", 12, GEDAEMPFT, "start", 600, 2))
-    s.append(f'<rect x="816" y="293" width="120" height="9" rx="4.5" fill="{KACHEL}" stroke="{RAND}"/>')
-    s.append(f'<g clip-path="url(#balken)"><rect class="laden" x="816" y="293" width="34" height="9" rx="4.5" fill="{JADE}" opacity=".7"/></g>')
-    css += """
-@keyframes treiben { from { transform: translateX(0); } to { transform: translateX(-40px); } }
-.treiben { animation: treiben 30s ease-in-out infinite alternate; }
-"""
-    del rnd
-    return svg(W, H, "Now building: Breath of Freedom, an open-world adventure for Roblox", "\n".join(s), css, defs)
-
-
-# ---------- 3. Werkzeuge ----------
-def werkzeuge():
-    W, H = 960, 72
-    eintraege = [
-        ("Roblox Studio", "building", "cube"),
-        ("Luau", "scripting", "code"),
-        ("Rojo", "syncing code", "sync"),
-        ("Blender", "3D models", "mesh"),
-        ("Git", "saving versions", "git"),
-    ]
-
-    def symbol(art):
-        if art == "cube":
-            return (P("18,4 32,11 18,18 4,11", "#e2d8bd") + P("4,11 18,18 18,33 4,26", "#b7ae98") + P("18,18 32,11 32,26 18,33", "#8f8470")
-                    + L("M4 11 L18 18 L32 11", JADE, 1.4, 'class="puls"'))
-        if art == "code":
-            return L("M13 5 H9 V15 L5 18 L9 21 V31 H13 M23 5 H27 V15 L31 18 L27 21 V31 H23", JADE, 2.4)
-        if art == "sync":
-            return (f'<path d="M7 15 A11.5 11.5 0 0 1 28 11" fill="none" stroke="{TEXT}" stroke-width="2.6" stroke-linecap="round"/>'
-                    + P("31,5 31,15 22,13", TEXT)
-                    + f'<path d="M29 21 A11.5 11.5 0 0 1 8 25" fill="none" stroke="{JADE}" stroke-width="2.6" stroke-linecap="round"/>'
-                    + P("5,31 5,21 14,23", JADE))
-        if art == "mesh":
-            return (gem(18, 18, 15, "#ffb24a", "#c97a2a", "#ffd9a0")
-                    + L("M18 3 L5 10.5 L18 18 L31 10.5 M18 18 V33 M5 25.5 L18 18 L31 25.5", "#7a4a1a", 1, 'opacity=".55"'))
-        if art == "git":
-            return (L("M11 7 V29 M25 13 Q25 22 11 24", JADE, 2.4)
-                    + C(11, 7, 3.6, GRUND, f'stroke="{JADE}" stroke-width="2.2"') + C(11, 29, 3.6, GRUND, f'stroke="{JADE}" stroke-width="2.2"')
-                    + C(25, 13, 3.6, GRUND, f'stroke="{TEXT}" stroke-width="2.2"'))
-        return ""
-
-    s = []
-    for i, (name, unter, art) in enumerate(eintraege):
-        x = i * 195
-        s.append(f'<g transform="translate({x} 4)"><g class="auf" style="animation-delay:{.1 + i * .1:.1f}s">'
-                 f'<rect x=".5" y=".5" width="179" height="63" rx="10" fill="{GRUND}" stroke="{RAND}"/>'
-                 f'<g transform="translate(14 14)">{symbol(art)}</g>'
-                 f'{text(62, 30, name, 15, TEXT, "start", 700)}{text(62, 48, unter, 12.5, GEDAEMPFT)}</g></g>')
-    return svg(W, H, "Toolbox: Roblox Studio, Luau, Rojo, Blender, Git", "\n".join(s))
-
-
-# ---------- 4. Abschluss ----------
-def abschluss():
-    W, H = 960, 120
-    rnd = random.Random(11)
-    defs = f'<clipPath id="rahmen"><rect width="{W}" height="{H}" rx="12"/></clipPath>'
-    css = """
-@keyframes wind { 0%, 100% { transform: skewX(-5deg); } 50% { transform: skewX(5deg); } }
-.wind { animation: wind 4s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
-.wind2 { animation: wind 4s ease-in-out -1.3s infinite; transform-box: fill-box; transform-origin: 50% 100%; }
-.wind3 { animation: wind 4s ease-in-out -2.6s infinite; transform-box: fill-box; transform-origin: 50% 100%; }
-"""
-    s = [panel(W, H), f'<g clip-path="url(#rahmen)">']
-    for i in range(30):
-        s.append(C(rnd.uniform(20, 940), rnd.uniform(14, 60), rnd.choice([.6, .8, 1.1]), "#f3eee2", f'class="{["f1", "f2", "f3"][i % 3]}" opacity=".6"'))
-    for gruppe, k in enumerate(["wind", "wind2", "wind3"]):
-        halme = ""
-        for _ in range(70):
-            x, h = rnd.uniform(0, W), rnd.uniform(8, 22)
-            farbe = rnd.choice(["#2f4a2e", "#3e5a3c", "#284026"])
-            halme += P(f"{z(x - 2)},{H} {z(x + rnd.uniform(-3, 3))},{z(H - h)} {z(x + 2)},{H}", farbe)
-        s.append(f'<g class="{k}">{halme}</g>')
-    s.append(gluehwuermer(rnd, 10, 30, 930, 102, 114))  # unter dem Text, damit nichts ihn verdeckt
-    s.append(f'<g transform="translate(110 104)">{waystone(1.25)}</g>')
-    s.append("</g>")
-    s.append(builder("WAYSTONE WOKEN", 500, 34, 3.4, start=.2, takt=.05, dicke=.5))
-    s.append(text(500, 86, "Thanks for stopping by, traveler. You can fast travel back here anytime.", 14.5, GEDAEMPFT, "middle"))
-    return svg(W, H, "Waystone woken. Thanks for stopping by, traveler.", "\n".join(s), css, defs)
-
-
 if __name__ == "__main__":
     ZIEL.mkdir(exist_ok=True)
-    for name, bild in [("banner", banner), ("now-building", spielkarte),
-                       ("toolbox", werkzeuge), ("footer", abschluss)]:
-        inhalt = bild()
-        (ZIEL / f"{name}.svg").write_text(inhalt, encoding="utf-8")
-        print(f"assets/{name}.svg  {len(inhalt) // 1024} KB")
+    inhalt = banner()
+    (ZIEL / "banner.svg").write_text(inhalt, encoding="utf-8")
+    print(f"assets/banner.svg  {len(inhalt) // 1024} KB")

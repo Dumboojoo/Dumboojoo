@@ -621,28 +621,10 @@ def abschluss():
     return svg(W, H, "Waystone woken. Thanks for stopping by, traveler.", "\n".join(s), css, defs)
 
 
-# ---------- 5. Ei (Versteck) ----------
-def versteck():
-    W, H = 240, 220
-    css = """
-@keyframes wackeln { 0%, 76%, 100% { transform: rotate(0deg); } 80% { transform: rotate(-5deg); } 84% { transform: rotate(5deg); }
-  88% { transform: rotate(-3deg); } 92% { transform: rotate(2deg); } }
-.wackeln { animation: wackeln 5s ease-in-out 1s infinite; transform-box: fill-box; transform-origin: 50% 100%; }
-"""
-    s = [C(120, 112, 100, "url(#glowAmber)", 'class="puls" opacity=".55"')]
-    s.append(P("70,206 120,206 120,180 78,180", "#e2d8bd") + P("120,206 170,206 162,180 120,180", "#b7ae98"))
-    s.append(P("78,180 120,180 120,172 84,172", "#ece4cc") + P("120,180 162,180 156,172 120,172", "#c9bfa3"))
-    s.append(L("M96 200 H110 V186 H132 V196 H146", JADE, 1.8, 'class="puls"'))
-    s.append(f'<g transform="translate({z(120 - 50 * 1.7)} {z(174 - 88 * 1.7)}) scale(1.7)"><g class="wackeln">{ur_ei()}</g></g>')
-    for x, y, g, k in [(52, 70, 7, "f1"), (190, 52, 6, "f2"), (200, 132, 5, "f3"), (40, 140, 4, "f2"), (150, 22, 4, "f3")]:
-        s.append(funkel(x, y, g, "#ffe08a", f'class="{k}"'))
-    return svg(W, H, "An Ancient Egg on a Builder stone, glowing", "\n".join(s), css)
-
-
 if __name__ == "__main__":
     ZIEL.mkdir(exist_ok=True)
     for name, bild in [("banner", banner), ("now-building", spielkarte),
-                       ("toolbox", werkzeuge), ("footer", abschluss), ("egg", versteck)]:
+                       ("toolbox", werkzeuge), ("footer", abschluss)]:
         inhalt = bild()
         (ZIEL / f"{name}.svg").write_text(inhalt, encoding="utf-8")
         print(f"assets/{name}.svg  {len(inhalt) // 1024} KB")

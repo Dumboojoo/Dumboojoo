@@ -15,15 +15,6 @@
   <img src="assets/toolbox.svg" width="100%" alt="Toolbox: Roblox Studio, Luau, Rojo, Blender, Git">
 </p>
 
-<details>
-  <summary><b>Something is glowing down here …</b></summary>
-  <p align="center">
-    <img src="assets/egg.svg" width="200" alt="An Ancient Egg on a Builder stone, glowing">
-    <br>
-    <i>You found an <b>Ancient Egg</b>! Legend says it hatches the day Breath of Freedom comes out.</i>
-  </p>
-</details>
-
 <p align="center">
   <img src="assets/footer.svg" width="100%" alt="Waystone woken. Thanks for stopping by, traveler.">
 </p>

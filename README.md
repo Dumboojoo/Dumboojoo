@@ -8,10 +8,6 @@
 </p>
 
 <p align="center">
-  <img src="assets/player.svg" width="100%" alt="Player card: Dumboojoo, title World Builder, 4 of 5 achievements unlocked">
-</p>
-
-<p align="center">
   <img src="assets/now-building.svg" width="100%" alt="Now building: Breath of Freedom, an open-world adventure for Roblox">
 </p>
 

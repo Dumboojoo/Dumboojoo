@@ -277,22 +277,6 @@ def gleiter_mit_figur():
     return s
 
 
-def figur():
-    """Spielfigur wie spieler() im Wiki (Füße bei y = 0, 100 Einheiten = 5 Studs hoch), in Reisekleidung.
-    Der rechte Arm winkt."""
-    s = P("-18,0 -2,0 -2,-40 -18,-40", HOSE[0]) + P("2,0 18,0 18,-40 2,-40", HOSE[1])
-    s += P("-18,0 -2,0 -2,-9 -18,-9", LEDER[0]) + P("2,0 18,0 18,-9 2,-9", LEDER[1])
-    s += P("-20,-40 0,-40 0,-80 -20,-80", JACKE[0]) + P("0,-40 20,-40 20,-80 0,-80", JACKE[1])
-    s += P("-20,-44 20,-44 20,-49 -20,-49", "#3a2a1c") + L("M-17 -46.5 H17", JADE, 1.4, 'class="puls"')
-    s += P("-12,-80 12,-80 9,-72 -9,-72", "#e2d8bd") + P("0,-80 12,-80 9,-72 0,-72", "#c9bfa3")
-    s += P("-30,-80 -20,-80 -20,-42 -30,-42", JACKE[0]) + P("-30,-48 -20,-48 -20,-42 -30,-42", HAUT[0])
-    s += P("-12,-100 0,-100 0,-80 -12,-80", HAUT[0]) + P("0,-100 12,-100 12,-80 0,-80", HAUT[1])
-    s += P("-12,-101 12,-101 12,-95 -12,-95", LEDER[0]) + P("-12,-95 -9,-95 -9,-89 -12,-89", LEDER[0]) + P("9,-95 12,-95 12,-91 9,-91", LEDER[1])
-    s += P("-7,-91 -4,-91 -4,-87 -7,-87", "#2a2018") + P("4,-91 7,-91 7,-87 4,-87", "#2a2018")
-    s += f'<g class="winken">{P("20,-80 30,-80 30,-42 20,-42", JACKE[1])}{P("20,-48 30,-48 30,-42 20,-42", HAUT[1])}</g>'
-    return s
-
-
 MEDAILLE = {
     "stone": ("#b7ae98", "#7d7564", "#d9d2c0"),
     "bronze": ("#d09a5e", "#8f5f32", "#e8b880"),
@@ -300,7 +284,6 @@ MEDAILLE = {
     "gold": ("#f0cf6e", "#b48a2c", "#ffe08a"),
     "jade": ("#e2d8bd", "#a99f86", "#7fdcb3"),
 }
-MEDAILLE_TEXT = {"stone": "#b7ae98", "bronze": "#d09a5e", "silver": "#c3c8ce", "gold": "#e0b450", "jade": "#7fdcb3"}
 
 
 def mische(a, b, t):
@@ -488,58 +471,7 @@ def banner():
     return svg(W, H, "Dumboojoo: Roblox developer, building open worlds", "\n".join(s), css, defs)
 
 
-# ---------- 2. Spielerkarte mit Erfolgen ----------
-ERFOLGE = [
-    ("stone", "explore", "First Steps", "Set up my", "GitHub profile"),
-    ("bronze", "growth", "Big Idea", "Dreamed up", "my own world"),
-    ("silver", "collect", "Wiki Keeper", "Wrote a whole", "wiki for my game"),
-    ("gold", "boss", "Boss Designer", "Planned every", "boss fight"),
-    ("jade", "secret", "???", "Release", "Version 1"),
-]
-
-
-def spielerkarte():
-    W, H = 960, 262
-    css = """
-@keyframes winken { 0%, 4% { transform: rotate(0deg); } 12% { transform: rotate(-150deg); } 19% { transform: rotate(-124deg); }
-  26% { transform: rotate(-158deg); } 33% { transform: rotate(-124deg); } 40% { transform: rotate(-150deg); } 50%, 100% { transform: rotate(0deg); } }
-.winken { animation: winken 7s ease-in-out .8s infinite; transform-box: fill-box; transform-origin: 50% 5%; }
-@keyframes atmen { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
-.atmen { animation: atmen 3.6s ease-in-out infinite; }
-.gesperrt { filter: url(#grau); }
-"""
-    defs = '<filter id="grau"><feColorMatrix type="saturate" values="0"/></filter>'
-    s = [panel(W, H)]
-
-    # Bühne links: Figur auf einem Waystone-Ring, darüber Name und Titel wie im Spiel
-    s.append(f'<rect x="22" y="22" width="268" height="218" rx="8" fill="url(#vig)" stroke="{RAND}"/>')
-    s.append('<ellipse cx="156" cy="212" rx="70" ry="11" fill="#0d0b10" opacity=".55"/>')
-    s.append(C(156, 210, 60, "url(#glowJade)", 'class="puls" transform="matrix(1 0 0 .22 0 163.8)"'))
-    s.append(f'<ellipse cx="156" cy="210" rx="52" ry="9" fill="none" stroke="{JADE}" stroke-width="2" class="puls"/>')
-    s.append(f'<g transform="translate(156 210) scale(1.02)"><g class="atmen">{figur()}</g></g>')
-    s.append(text(156, 70, "Dumboojoo", 19, TEXT, "middle", 700))
-    s.append(text(156, 90, "World Builder", 14, GOLD, "middle", 600, .4))
-
-    # Erfolge rechts, wie das Achievements-Fenster im Spiel
-    s.append(text(318, 50, "ACHIEVEMENTS", 13, GEDAEMPFT, "start", 600, 3))
-    s.append(text(938, 50, '<tspan fill="#ece6d6" font-weight="700">4</tspan> / 5 unlocked', 13, GEDAEMPFT, "end", 400))
-    s.append(f'<path d="M318 62 H938" stroke="{RAND}"/>')
-    for i, (stufe, kat, name, z1, z2) in enumerate(ERFOLGE):
-        cx = 318 + 62 + i * 124
-        gesperrt = stufe == "jade"
-        medal = medaille(stufe, kat)
-        if gesperrt:
-            medal = f'<g class="gesperrt" opacity=".42">{medal}</g>'
-        s.append(f'<g transform="translate({cx - 40} 74) scale(.8)"><g class="auf" style="animation-delay:{.25 + i * .14:.2f}s">{medal}</g></g>')
-        s.append(text(cx, 180, name, 15, GEDAEMPFT if gesperrt else TEXT, "middle", 700))
-        s.append(text(cx, 198, "Jade · locked" if gesperrt else stufe.capitalize(), 12, MEDAILLE_TEXT[stufe], "middle", 600, .6,
-                      'opacity=".7"' if gesperrt else ""))
-        s.append(text(cx, 219, z1, 13, GEDAEMPFT, "middle"))
-        s.append(text(cx, 236, z2, 13, GEDAEMPFT, "middle"))
-    return svg(W, H, "Player card: Dumboojoo, title World Builder, 4 of 5 achievements unlocked", "\n".join(s), css, defs)
-
-
-# ---------- 3. Woran ich baue ----------
+# ---------- 2. Woran ich baue ----------
 MERKMALE = [
     ("u", "glide", "Glide anywhere", "jump off any peak"),
     ("s", "sword", "Beat bosses", "giants that hit hard"),
@@ -619,7 +551,7 @@ def spielkarte():
     return svg(W, H, "Now building: Breath of Freedom, an open-world adventure for Roblox", "\n".join(s), css, defs)
 
 
-# ---------- 4. Werkzeuge ----------
+# ---------- 3. Werkzeuge ----------
 def werkzeuge():
     W, H = 960, 72
     eintraege = [
@@ -660,7 +592,7 @@ def werkzeuge():
     return svg(W, H, "Toolbox: Roblox Studio, Luau, Rojo, Blender, Git", "\n".join(s))
 
 
-# ---------- 5. Abschluss ----------
+# ---------- 4. Abschluss ----------
 def abschluss():
     W, H = 960, 120
     rnd = random.Random(11)
@@ -689,7 +621,7 @@ def abschluss():
     return svg(W, H, "Waystone woken. Thanks for stopping by, traveler.", "\n".join(s), css, defs)
 
 
-# ---------- 6. Ei (Versteck) ----------
+# ---------- 5. Ei (Versteck) ----------
 def versteck():
     W, H = 240, 220
     css = """
@@ -709,7 +641,7 @@ def versteck():
 
 if __name__ == "__main__":
     ZIEL.mkdir(exist_ok=True)
-    for name, bild in [("banner", banner), ("player", spielerkarte), ("now-building", spielkarte),
+    for name, bild in [("banner", banner), ("now-building", spielkarte),
                        ("toolbox", werkzeuge), ("footer", abschluss), ("egg", versteck)]:
         inhalt = bild()
         (ZIEL / f"{name}.svg").write_text(inhalt, encoding="utf-8")

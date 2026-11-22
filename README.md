@@ -1,6 +1,5 @@
 ## 👋 About Me
 
-Hey, I'm **Simon**, a hobbyist game developer making games in **Roblox**.
+Hey, I'm **Simon**.
 
-> - 🏔️ Working on my biggest project yet: an open world where you can climb any cliff and glide from any peak
 > - 💻 Mostly working with **Luau** and **Python**
